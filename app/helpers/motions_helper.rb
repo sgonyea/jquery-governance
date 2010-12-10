@@ -1,8 +1,10 @@
 module MotionsHelper
   def html_attrs_for_motion(motion)
+    classes = [dom_class(motion), state_class_for_motion(motion)]
+    classes << 'seconded' if member? && current_member.seconded_motions.open_state.include?(motion)
     {
       :id    => dom_id(motion),
-      :class => "#{dom_class(motion)} #{state_class_for_motion(motion)}".strip
+      :class => classes.compact.join(' ')
     }
   end
 
@@ -29,7 +31,11 @@ module MotionsHelper
 
   def link_to_more_motions(motions)
     if motions.count > motions.size
-      render(:partial => 'motions/link_to_more', :locals => { :state => motions.last.state_name, :last_id => motions.last.id })
+      content_tag(
+        :div,
+        link_to('More', show_more_motions_path, :class => 'more_motions quick-tool', :'data-last-id' => motions.last.id),
+        :class => 'more_motions'
+      )
     end
   end
 end
