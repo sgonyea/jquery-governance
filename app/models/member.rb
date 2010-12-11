@@ -12,11 +12,13 @@ class Member < ActiveRecord::Base
   has_many :motions
   has_many :events
   has_many :member_conflicts
-  has_many :conflicts, :through => :member_conflicts
-  has_many :seconded_motions, :through => :events, :source => :motion, :conditions => { :events => { :event_type => 'second' } }
+  has_many :conflicts,        :through    => :member_conflicts
+  has_many :seconded_motions, :through    => :events,
+                              :source     => :motion,
+                              :conditions => { :events => {:event_type => 'second'} }
 
   before_destroy :skip_destroy
-  alias :delete   :destroy
+  alias :delete :destroy
 
   # Checks membership status at a given Date/Time
   #   @param [Date, Time, DateTime] time The time for which membership status should be checked
@@ -69,18 +71,9 @@ class Member < ActiveRecord::Base
     self.name || self.email
   end
 
-  if Rails.env != "production"
-    # This is a loophole for **non-production**
-    def destroy!
-      @_destroy = true
-      raise "Member could not be destroyed." unless destroy
-    end
-  end
-
 private
   # Prevent the deletion of the Member, until it's deemed OK / inconsequential / has a workflow.
   def skip_destroy
-    return true if @_destroy and Rails.env != "production"
     errors.add(:member, "Member cannot be deleted.")
     return false
   end
