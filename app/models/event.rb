@@ -3,11 +3,11 @@ class Event < ActiveRecord::Base
   # which currently assumes the #{event}ed always converts an event to
   # its past tense form
   # TODO objection breaks this convention
-  EVENT_TYPES = ["vote", "second", "objection"]
-  HUMAN_READABLE_EVENT_TYPES = {
-    'vote' => 'Vote',
-    'second' => 'Second',
-    'objection' => 'Objection'
+  EVENT_TYPES = ['vote', 'second', 'objection']
+  PAST_TENSE_EVENT_TYPES = {
+    'vote'      =>  'voted',
+    'second'    =>  'seconded',
+    'objection' =>  'objected'
   }
 
   belongs_to  :member
@@ -60,9 +60,12 @@ class Event < ActiveRecord::Base
   end
   alias :objection? :is_objection?
 
-  def formatted_event_type(format = :human)
-    if format == :human
-      HUMAN_READABLE_EVENT_TYPES[event_type]
+  # @param [Symbol] format The desired format of the event_type
+  # @return [String] the event type in the desired format, or the event type if not recognized
+  def formatted_event_type(format=:human)
+    case format
+    when :human then  event_type.capitalize
+    when :past  then  PAST_TENSE_EVENT_TYPES[event_type]
     else
       event_type
     end
