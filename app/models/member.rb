@@ -1,8 +1,7 @@
 class Member < ActiveRecord::Base
   include Voting
 
-  # Include default devise modules. Others available are:
-  # :token_authenticatable, :confirmable, :lockable and :timeoutable
+  # Include default devise modules:
   devise :database_authenticatable, :recoverable, :rememberable
 
   # Setup accessible (or protected) attributes for your model
@@ -17,7 +16,17 @@ class Member < ActiveRecord::Base
                               :source     => :motion,
                               :conditions => { :events => {:event_type => 'second'} }
 
-  before_destroy :skip_destroy
+  default_scope {
+    joins(:active_memberships).where(:active_memberships => {:ended_at => nil})
+  }
+
+  after_create :begin_membership
+
+  # The destroying of members is expressly prohibited
+  def destroy
+    update_attribute(:is_active, false) if is_active?
+    _run_destroy_callbacks
+  end
   alias :delete :destroy
 
   # Checks membership status at a given Date/Time
@@ -66,15 +75,14 @@ class Member < ActiveRecord::Base
     seconds.where(:motion_id => motion.id).present?
   end
 
-  # Return name if present, email if not
-  def name_or_email
+  # @eturn The display name for this member. Returns their name if present, email otherwise
+  def display_name
     self.name || self.email
   end
 
 private
-  # Prevent the deletion of the Member, until it's deemed OK / inconsequential / has a workflow.
-  def skip_destroy
-    errors.add(:member, "Member cannot be deleted.")
-    return false
+
+  def begin_membership
+    active_memberships.create(:active_at => Time.now)
   end
 end
