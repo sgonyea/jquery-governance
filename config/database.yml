@@ -12,6 +12,7 @@ development:
   adapter: postgresql
   encoding: unicode
   database: jquery-governance_development
+  min_messages: notice
   pool: 5
 #  username:
 #  password:
@@ -38,6 +39,7 @@ test: &test
   adapter: postgresql
   encoding: unicode
   database: jquery-governance_test
+  min_messages: warning
   pool: 5
 #  username:
 #  password:
