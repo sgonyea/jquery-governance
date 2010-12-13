@@ -1,6 +1,8 @@
-# Member Creation
+# Instantiation
 
-## Workflow
+## Member Creation
+
+### Workflow
 
 1.  A motion is made to invite a new Member
     *   Full Name and E-Mail are supplied as part of the motion?
@@ -14,13 +16,13 @@
 
     *   Policy Acceptance? Rules acknowledgement?
 
-## Ideas
+### Ideas
 
 *   Before a vote is brought, should the Member:
     *   Accept policies or rules?
     *   Declare any conflicts of interest they might have (Full Disclosure)?
 
-# Member Destruction
+## Member Destruction
 
 1.  A member may resign his/her membership at any time.
 
@@ -29,3 +31,15 @@
 3.  If passed, the Active Membership must either:
     *   Be "deleted", except really acts\_as\_versioned
     *   Have an "ended at" timestamp set, which will cause their Member instance to be filtered out.
+
+# Constraints
+
+1.  A member can have many "memberships" (historically)
+    *   Only one of those memberships (the most recent) can actually be active.
+
+2.  Members should be hidden from the wider view, except in a timeline ?
+
+
+
+
+
